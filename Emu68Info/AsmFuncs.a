@@ -1,0 +1,314 @@
+;----------------------------------------------------------
+; 
+; Emu68Info assembly functions
+; 
+; Compiler(s):
+; Frank Wille vasm assembler, or
+; AmigaOS M68K SAS/C 6.59 Assembler.
+; 
+;----------------------------------------------------------
+
+_LVOSupervisor EQU -30
+
+;----------------------------------------------------------
+
+	SECTION __merged,code
+
+;----------------------------------------------------------
+
+	XDEF	_asm_nop
+	XDEF	_asm_le32
+	XDEF	_asm_div64
+	
+	XDEF    _asm_cpu_cacr
+	XDEF    _asm_cpu_vbr
+	
+	XDEF	_asm_cpu_rate
+	XDEF	_asm_fpu_rate
+	
+	XDEF    _asm_cnt_frq
+	XDEF    _asm_cnt_val_lo
+	XDEF    _asm_cnt_val_hi
+	XDEF    _asm_cnt_68k_lo
+	XDEF    _asm_cnt_68k_hi
+	XDEF    _asm_cnt_arm_lo
+	XDEF    _asm_cnt_arm_hi
+	
+	XDEF    _asm_jit_size
+	XDEF    _asm_jit_free
+	XDEF    _asm_jit_count
+	XDEF    _asm_jit_sfthresh
+	XDEF    _asm_jit_ctrl
+	XDEF    _asm_jit_cmiss
+	
+	XDEF    _asm_dbg_ctrl
+	XDEF    _asm_dbg_addr_lo
+	XDEF    _asm_dbg_addr_hi
+
+;----------------------------------------------------------
+;
+; void asm_nop(void)
+; 
+;----------------------------------------------------------
+
+	cnop 0,4
+
+_asm_nop:
+	nop
+	rts
+
+;----------------------------------------------------------
+;
+; void asm_le32(void)
+; 
+;----------------------------------------------------------
+
+	cnop 0,4
+
+_asm_le32:
+	ror.w    #8,d0
+	swap     d0
+	ror.w    #8,d0
+	rts
+
+;----------------------------------------------------------
+;
+; void asm_div64(d0 )
+; 
+;----------------------------------------------------------
+
+	cnop 0,4
+
+_asm_div64:
+	divu.l   d2,d1:d0
+	rts
+
+;----------------------------------------------------------
+;
+; ULONG asm_cpu_cacr(void)
+; ULONG asm_cpu_vbr(void)
+;
+;----------------------------------------------------------
+
+	cnop 0,4
+
+_asm_cpu_cacr:
+	DC.W     $4E7A,$0002 ; movec cacr,d0
+	rts
+_asm_cpu_vbr:
+	DC.W     $4E7A,$0801 ; movec vbr,d0
+	rts
+
+;----------------------------------------------------------
+;
+; ULONG asm_cnt_frq(void)
+; ULONG asm_cnt_val_lo(void)
+; ULONG asm_cnt_val_hi(void)
+; ULONG asm_cnt_68k_lo(void)
+; ULONG asm_cnt_68k_hi(void)
+; ULONG asm_cnt_arm_lo(void)
+; ULONG asm_cnt_arm_hi(void)
+;
+;----------------------------------------------------------
+
+	cnop 0,4
+
+_asm_cnt_frq:
+	DC.W     $4E7A,$00e0 ; movec cntfrq,d0
+	rts
+_asm_cnt_val_lo:
+	DC.W     $4E7A,$00e1 ; movec cntvallo,d0
+	rts
+_asm_cnt_val_hi:
+	DC.W     $4E7A,$00e2 ; movec cntvalhi,d0
+	rts
+_asm_cnt_68k_lo:
+	DC.W     $4E7A,$00e3 ; movec cnt68klo,d0
+	rts
+_asm_cnt_68k_hi:
+	DC.W     $4E7A,$00e4 ; movec cnt68khi,d0
+	rts
+_asm_cnt_arm_lo:
+	DC.W     $4E7A,$00e5 ; movec cntarmlo,d0
+	rts
+_asm_cnt_arm_hi:
+	DC.W     $4E7A,$00e6 ; movec cntarmhi,d0
+	rts
+
+;----------------------------------------------------------
+;
+; ULONG asm_jit_size(void)
+; ULONG asm_jit_free(void)
+; ULONG asm_jit_count(void)
+; ULONG asm_jit_sfthresh(void)
+; ULONG asm_jit_ctrl(void)
+; ULONG asm_jit_cmiss(void)
+;
+;----------------------------------------------------------
+
+	cnop 0,4
+
+_asm_jit_size:
+	DC.W     $4E7A,$00e7 ; movec jitsize,d0
+	rts
+_asm_jit_free:
+	DC.W     $4E7A,$00e8 ; movec jitfree,d0
+	rts
+_asm_jit_count:
+	DC.W     $4E7A,$00e9 ; movec jitcount,d0
+	rts
+_asm_jit_sfthresh:
+	DC.W     $4E7A,$00ea ; movec jitsfthresh,d0
+	rts
+_asm_jit_ctrl:
+	DC.W     $4E7A,$00eb ; movec jitctrl,d0
+	rts
+_asm_jit_cmiss:
+	DC.W     $4E7A,$00ec ; movec jitcmiss,d0
+	rts
+
+;----------------------------------------------------------
+;
+; ULONG asm_dbg_ctrl(void)
+; ULONG asm_dbg_addr_lo(void)
+; ULONG asm_dbg_addr_hi(void)
+;
+;----------------------------------------------------------
+
+	cnop 0,4
+
+_asm_dbg_ctrl:
+	DC.W     $4E7A,$00ed ; movec dbgctrl,d0
+	rts
+_asm_dbg_addr_lo:
+	DC.W     $4E7A,$00ee ; movec dbgaddrlo,d0
+	rts
+_asm_dbg_addr_hi:
+	DC.W     $4E7A,$00ef ; movec dbgaddrhi,d0
+	rts
+
+;----------------------------------------------------------
+;
+; ULONG asm_cpu_rate(void)
+;
+;----------------------------------------------------------
+
+CPU_BENCH_1 MACRO
+	sub.l a0,a0
+	ENDM
+
+CPU_BENCH_10 MACRO
+	CPU_BENCH_1
+	CPU_BENCH_1
+	CPU_BENCH_1
+	CPU_BENCH_1
+	CPU_BENCH_1
+	CPU_BENCH_1
+	CPU_BENCH_1
+	CPU_BENCH_1
+	CPU_BENCH_1
+	CPU_BENCH_1
+	ENDM
+
+	cnop 0,4
+
+_asm_cpu_rate:
+	movem.l  d2-d7/a2-a6,-(sp)    ; Push
+	moveq.l  #0,d0                ; Result
+	move.l   $4.w,a6              ; ExecBase
+	lea.l    _asm_cpu_code(pc),a5 ; Code
+	jsr      _LVOSupervisor(a6)   ; Supervisor(Code)
+	movem.l  (sp)+,d2-d7/a2-a6    ; Pop
+	rts                           ; Exit
+_asm_cpu_code:
+	DC.W     $4E7A,$10e0          ; MOVEC CNTFRQ,  D1
+	DC.W     $4E7A,$20e1          ; MOVEC CNTVALLO,D2
+	lsr.l    #1,d1                ; Frequency / 2
+	add.l    d1,d2                ; Counter + 0.5 second
+_asm_cpu_loop_1:
+	move.l   #100-1,d4            ; 100*10 = 1000 opcodes
+_asm_cpu_loop_2:
+	CPU_BENCH_10
+	CPU_BENCH_10
+	CPU_BENCH_10
+	CPU_BENCH_10
+	CPU_BENCH_10
+	CPU_BENCH_10
+	CPU_BENCH_10
+	CPU_BENCH_10
+	CPU_BENCH_10
+	CPU_BENCH_10
+	add.l    #100,d0              ; Result
+	dbf      d4,_asm_cpu_loop_2   ; Continue
+	DC.W     $4E7A,$30e1          ; MOVEC CNTVALLO,D2
+	cmp.l    d2,d3                ; D2 > D3 ?
+	blo.l    _asm_cpu_loop_1      ; Continue
+	lsl.l    #1,d0                ; Frequency * 2
+	rte                           ; Return
+
+;----------------------------------------------------------
+;
+; ULONG asm_fpu_rate(void)
+;
+;----------------------------------------------------------
+
+FPU_BENCH_1 MACRO
+	fsub.x fp0,fp0
+	ENDM
+
+FPU_BENCH_10 MACRO
+	FPU_BENCH_1
+	FPU_BENCH_1
+	FPU_BENCH_1
+	FPU_BENCH_1
+	FPU_BENCH_1
+	FPU_BENCH_1
+	FPU_BENCH_1
+	FPU_BENCH_1
+	FPU_BENCH_1
+	FPU_BENCH_1
+	ENDM
+
+	cnop 0,4
+
+_asm_fpu_rate:
+	movem.l  d2-d7/a2-a6,-(sp)    ; Push
+	moveq.l  #0,d0                ; Result
+	move.l   $4.w,a6              ; ExecBase
+	lea.l    _asm_fpu_code(pc),a5 ; Code
+	jsr      _LVOSupervisor(a6)   ; Supervisor(Code)
+	movem.l  (sp)+,d2-d7/a2-a6    ; Pop
+	rts                           ; Exit
+_asm_fpu_code:
+	DC.W     $4E7A,$10e0          ; MOVEC CNTFRQ,  D1
+	DC.W     $4E7A,$20e1          ; MOVEC CNTVALLO,D2
+	lsr.l    #1,d1                ; Frequency / 2
+	add.l    d1,d2                ; Counter + 0.5 second
+_asm_fpu_loop_1:
+	move.l   #100-1,d4            ; 100*10 = 1000 opcodes
+_asm_fpu_loop_2:
+	FPU_BENCH_10
+	FPU_BENCH_10
+	FPU_BENCH_10
+	FPU_BENCH_10
+	FPU_BENCH_10
+	FPU_BENCH_10
+	FPU_BENCH_10
+	FPU_BENCH_10
+	FPU_BENCH_10
+	FPU_BENCH_10
+	add.l    #100,d0              ; Result
+	dbf      d4,_asm_fpu_loop_2   ; Continue
+	DC.W     $4E7A,$30e1          ; MOVEC CNTVALLO,D2
+	cmp.l    d2,d3                ; D2 > D3 ?
+	blo.l    _asm_fpu_loop_1      ; Continue
+	lsl.l    #1,d0                ; Frequency * 2
+	rte                           ; Return
+
+;----------------------------------------------------------
+;
+; END OF FILE
+;
+;----------------------------------------------------------
+
+	end

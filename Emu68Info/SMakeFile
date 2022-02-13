@@ -1,0 +1,18 @@
+#################################################
+#
+# SAS/C Makefile for "Emu68Info"
+# for AmigaOS M68K SAS/C 6.59 Compiler
+# 
+#################################################
+
+OUTFILE=Emu68Info
+
+OBJECTS=Emu68Info.o AsmFuncs.o DeviceTree.o MailBox.o Modules.o VC4Msg.o VC4.o
+
+all: $(OUTFILE)
+
+clean:
+	@delete $(OBJECTS)
+
+$(OUTFILE): $(OBJECTS)
+	sc math=standard NOICONS link $(OBJECTS)
