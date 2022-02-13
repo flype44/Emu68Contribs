@@ -1,0 +1,4 @@
+# Build Objects
+*.o
+*.lha
+Emu68Info/Emu68Info

@@ -3,19 +3,25 @@
 
 #include <exec/types.h>
 
-#define ASM __asm __saveds 
+#ifdef __GNUC__
+#define ASM
+#define REG(r,y)	y __asm( # r )
+#else
+#define ASM __asm __saveds
+#define REG(r,y)	register __ ## r y
+#endif
 
 void ASM asm_nop(void);
 
 void ASM asm_reset_rpi(void);
 
 ULONG ASM asm_le32(
-	register __d0 ULONG a);
+	REG(d0,ULONG a));
 
 ULONG ASM asm_div64(
-	register __d0 ULONG a, 
-	register __d1 ULONG b, 
-	register __d2 ULONG c);
+	REG(d0,ULONG a), 
+	REG(d1,ULONG b), 
+	REG(d2,ULONG c));
 
 ULONG asm_cpu_cacr(void);
 ULONG asm_cpu_vbr(void);
