@@ -1,17 +1,17 @@
 #################################################
 #
-# SAS/C Makefile for "Emu68Info"
-# for AmigaOS M68K SAS/C 6.59 Compiler
+# GCC Makefile for "Emu68Info"
+# for m68k-amigaos-gcc
 # 
 #################################################
 
 PREFX := /opt/m68k-amigaos
 
-CC			:= $(PREFX)/bin/m68k-amigaos-gcc
-AS			:= $(PREFX)/bin/m68k-amigaos-as
-AR			:= $(PREFX)/bin/m68k-amigaos-ar
-LD			:= $(PREFX)/bin/m68k-amigaos-ld
-RL			:= $(PREFX)/bin/m68k-amigaos-ranlib
+CC		:= $(PREFX)/bin/m68k-amigaos-gcc
+AS		:= $(PREFX)/bin/m68k-amigaos-as
+AR		:= $(PREFX)/bin/m68k-amigaos-ar
+LD		:= $(PREFX)/bin/m68k-amigaos-ld
+RL		:= $(PREFX)/bin/m68k-amigaos-ranlib
 VASM		:= $(PREFX)/bin/vasmm68k_mot
 
 OUTFILE		= Emu68Info
