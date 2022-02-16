@@ -38,7 +38,9 @@ _LVOSupervisor EQU -30
 	XDEF    _asm_jit_free
 	XDEF    _asm_jit_count
 	XDEF    _asm_jit_sfthresh
+	XDEF    _asm_jit_sfthresh_set
 	XDEF    _asm_jit_ctrl
+	XDEF    _asm_jit_ctrl_set
 	XDEF    _asm_jit_cmiss
 	
 	XDEF    _asm_dbg_ctrl
@@ -59,8 +61,8 @@ _asm_nop:
 
 ;----------------------------------------------------------
 ;
-; void asm_le32(void)
-; 
+; void asm_le32(ULONG a)
+;               D0
 ;----------------------------------------------------------
 
 	cnop 0,4
@@ -73,8 +75,8 @@ _asm_le32:
 
 ;----------------------------------------------------------
 ;
-; void asm_div64(d0 )
-; 
+; void asm_div64(ULONG a, ULONG b, ULONG c)
+;                D0       D1       D2
 ;----------------------------------------------------------
 
 	cnop 0,4
@@ -141,7 +143,9 @@ _asm_cnt_arm_hi:
 ; ULONG asm_jit_free(void)
 ; ULONG asm_jit_count(void)
 ; ULONG asm_jit_sfthresh(void)
+; ULONG asm_jit_sfthresh_set(REG(D0, ULONG a))
 ; ULONG asm_jit_ctrl(void)
+; ULONG asm_jit_ctrl_set(REG(D0, ULONG a))
 ; ULONG asm_jit_cmiss(void)
 ;
 ;----------------------------------------------------------
@@ -160,8 +164,14 @@ _asm_jit_count:
 _asm_jit_sfthresh:
 	DC.W     $4E7A,$00ea ; movec jitsfthresh,d0
 	rts
+_asm_jit_sfthresh_set:
+	DC.W     $4E7B,$00ea ; movec d0,jitsfthresh
+	rts
 _asm_jit_ctrl:
 	DC.W     $4E7A,$00eb ; movec jitctrl,d0
+	rts
+_asm_jit_ctrl_set:
+	DC.W     $4E7B,$00eb ; movec d0,jitctrl
 	rts
 _asm_jit_cmiss:
 	DC.W     $4E7A,$00ec ; movec jitcmiss,d0
@@ -170,8 +180,11 @@ _asm_jit_cmiss:
 ;----------------------------------------------------------
 ;
 ; ULONG asm_dbg_ctrl(void)
+; ULONG asm_dbg_ctrl_set(REG(D0, ULONG a))
 ; ULONG asm_dbg_addr_lo(void)
+; ULONG asm_dbg_addr_lo_set(REG(D0, ULONG a))
 ; ULONG asm_dbg_addr_hi(void)
+; ULONG asm_dbg_addr_hi_set(REG(D0, ULONG a))
 ;
 ;----------------------------------------------------------
 
@@ -180,11 +193,20 @@ _asm_jit_cmiss:
 _asm_dbg_ctrl:
 	DC.W     $4E7A,$00ed ; movec dbgctrl,d0
 	rts
+_asm_dbg_ctrl_set:
+	DC.W     $4E7B,$00ed ; movec d0,dbgctrl
+	rts
 _asm_dbg_addr_lo:
 	DC.W     $4E7A,$00ee ; movec dbgaddrlo,d0
 	rts
+_asm_dbg_addr_lo_set:
+	DC.W     $4E7B,$00ee ; movec d0,dbgaddrlo
+	rts
 _asm_dbg_addr_hi:
 	DC.W     $4E7A,$00ef ; movec dbgaddrhi,d0
+	rts
+_asm_dbg_addr_hi_set:
+	DC.W     $4E7B,$00ef ; movec d0,dbgaddrhi
 	rts
 
 ;----------------------------------------------------------

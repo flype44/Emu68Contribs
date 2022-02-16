@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14.0)
-project(Emu68Info VERSION 0.1.0)
+project(Emu68Info VERSION 0.1.1)
 get_verstring(VERSTRING)
 
 add_link_options(-noixemul -m68040 -mhard-float)

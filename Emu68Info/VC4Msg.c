@@ -39,8 +39,8 @@ ULONG VC4_GetInfo(void)
 		{
 			struct VC4Msg cmd;
 			
+			cmd.msg.mn_Length = sizeof(cmd);
 			cmd.msg.mn_ReplyPort = replyPort;
-			cmd.msg.mn_Length = sizeof(struct VC4Msg);
 			
 			// VCMD_GET_PHASE
 			
@@ -48,7 +48,7 @@ ULONG VC4_GetInfo(void)
 			PutMsg(vc4Port, &cmd.msg);
 			WaitPort(replyPort);
 			GetMsg(replyPort);
-			printf("Phase:     %ld\n", cmd.GetPhase);//.val);
+			printf("Phase          : %ld\n", cmd.GetPhase.val);
 			
             // VCMD_GET_SCALER
             
@@ -57,8 +57,8 @@ ULONG VC4_GetInfo(void)
 			WaitPort(replyPort);
 			GetMsg(replyPort);
 			
-			printf("Scaler1:   %ld\n", cmd.GetScaler.val & 1);
-			printf("Scaler2:   %ld\n", cmd.GetScaler.val & 2);
+			printf("Scaler1        : %ld\n", cmd.GetScaler.val & 1);
+			printf("Scaler2        : %ld\n", cmd.GetScaler.val & 2);
 
             // VCMD_GET_KERNEL
             
@@ -67,9 +67,9 @@ ULONG VC4_GetInfo(void)
 			WaitPort(replyPort);
 			GetMsg(replyPort);
 			
-			printf("Kernel:    %ld\n", cmd.GetKernel.kernel);
-			printf("KernelB:   %ld\n", cmd.GetKernel.b);
-			printf("KernelC:   %ld\n", cmd.GetKernel.c);
+			printf("Kernel         : %ld\n", cmd.GetKernel.kernel);
+			printf("KernelB        : %ld\n", cmd.GetKernel.b);
+			printf("KernelC        : %ld\n", cmd.GetKernel.c);
 			
 			DeleteMsgPort(replyPort);
 		}

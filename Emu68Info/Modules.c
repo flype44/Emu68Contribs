@@ -20,25 +20,24 @@
 
 /**********************************************************
  ** 
- ** DEFINES
+ ** Modules_IdString()
  ** 
  **********************************************************/
 
-UBYTE sModules[128];
-
-/**********************************************************
- ** 
- ** MyIdString()
- ** 
- **********************************************************/
-
-STRPTR Modules_IdString(STRPTR idString)
+void Modules_IdString(STRPTR srcIdString, STRPTR dstIdString)
 {
-	UBYTE *src = idString;
-	UBYTE *dst = sModules;
+	UBYTE *src = srcIdString;
+	UBYTE *dst = dstIdString;
+	
+	// ignoring '$VER:' if present
+	
+	if (*src == '$')
+		src += 6;
 	
 	do
 	{
+		// ignoring return carriages
+		
 		if (*src == 0x0A)
 			continue;
 		
@@ -49,25 +48,29 @@ STRPTR Modules_IdString(STRPTR idString)
 		
 	} while (*src++);
 	
-	*dst = 0;
+	// null-terminating char
 	
-	return (sModules[0] == '$' ? sModules + 6 : sModules);
+	*dst = 0;
 }
 
 /**********************************************************
  ** 
- ** GetModules_DeviceTree()
+ ** Modules_GetDeviceTree()
  ** 
  **********************************************************/
 
 void Modules_GetDeviceTree(Module *m)
 {
-	if (GetPropStr(sModules, "/emu68", "idstring"))
+	UBYTE s[256];
+	
+	if (GetPropStr(s, "/emu68", "idstring"))
 	{
-		m->addr     = (APTR)-1L; // fake
-		m->ver      = atoi(strstr(sModules + 6, " ") + 1);
-		m->rev      = atoi(strstr(sModules + 6, ".") + 1);
-		m->idString = Modules_IdString(sModules);
+		Modules_IdString(s, m->idString);
+		
+		m->addr     = (APTR)0L;
+		m->ver      = atoi(strstr(s + 6, " ") + 1);
+		m->rev      = atoi(strstr(s + 6, ".") + 1);
+		m->loaded   = TRUE;
 	}
 }
 
@@ -85,10 +88,12 @@ void Modules_GetLibrary(Module *m, struct List *list)
 	{
 		struct Library *lib = (struct Library *)node;
 		
+		Modules_IdString(lib->lib_IdString, m->idString);
+		
 		m->addr     = lib;
 		m->ver      = lib->lib_Version;
 		m->rev      = lib->lib_Revision;
-		m->idString = Modules_IdString(lib->lib_IdString);
+		m->loaded   = TRUE;
 	}
 }
 
@@ -104,12 +109,12 @@ void Modules_GetPort(Module *m)
 	
 	if (res = FindPort(m->name))
 	{
-		strcpy(sModules, "Public message port found");
+		strcpy(m->idString, "Public message port found");
 		
 		m->addr     = res;
 		m->ver      = 0L;
 		m->rev      = 0L;
-		m->idString = sModules;
+		m->loaded   = TRUE;
 	}
 }
 
@@ -125,9 +130,10 @@ void Modules_GetResident(Module *m)
 	
 	if (res = FindResident(m->name))
 	{
-		m->addr = res;
-		m->ver  = res->rt_Version;
-		m->rev  = 0;
+		m->addr     = res;
+		m->ver      = res->rt_Version;
+		m->rev      = 0;
+		m->loaded   = TRUE;
 	}
 }
 
@@ -141,49 +147,43 @@ ULONG Modules_Load(Module items[], ULONG count)
 {
 	ULONG i;
 	
+	if (SysBase == NULL || items == NULL)
+	{
+		// failure
+		return (0);
+	}
+	
 	for (i = 0; i < count; i++)
 	{
-		Module m = items[i];
-		
-		switch (m.type)
+		switch (items[i].type)
 		{
 		case MODULE_DEVICE:
-			Modules_GetLibrary(&m, &SysBase->DeviceList);
+			Modules_GetLibrary(&items[i], &SysBase->DeviceList);
 			break;
 		
 		case MODULE_LIBRARY:
-			Modules_GetLibrary(&m, &SysBase->LibList);
+			Modules_GetLibrary(&items[i], &SysBase->LibList);
 			break;
 		
 		case MODULE_RESOURCE:
-			Modules_GetLibrary(&m, &SysBase->ResourceList);
+			Modules_GetLibrary(&items[i], &SysBase->ResourceList);
 			break;
 		
 		case MODULE_RESIDENT:
-			Modules_GetResident(&m);
+			Modules_GetResident(&items[i]);
 			break;
 		
 		case MODULE_MSGPORT:
-			Modules_GetPort(&m);
+			Modules_GetPort(&items[i]);
 			break;
 		
 		case MODULE_DEVICETREE:
-			Modules_GetDeviceTree(&m);
+			Modules_GetDeviceTree(&items[i]);
 			break;
 		}
-		
-		printf("| $%08lx | %-20s | %3ld | %4ld | %s\n", 
-			m.addr, m.name, m.ver, m.rev, m.idString);
 	}
 	
-	for (i = 0; i < count; i++)
-	{
-		Module m = items[i];
-		
-		printf("| $%08lx | %-20s | %3ld | %4ld | %s\n", 
-			items[i].addr, items[i].name, m.ver, m.rev, m.idString);
-	}
-	
+	// success
 	return (1);
 }
 

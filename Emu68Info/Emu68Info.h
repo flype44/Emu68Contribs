@@ -9,7 +9,7 @@
 #ifdef VERSION_STRING
 #define APP_VSTRING VERSION_STRING " Philippe CARPENTIER";
 #else
-#define APP_VSTRING "$VER: Emu68Info 0.1k (10.2.2022) Philippe CARPENTIER"
+#define APP_VSTRING "$VER: Emu68Info 0.1.1 (15.2.2022) [SAS/C 6.59] Philippe CARPENTIER"
 #endif
 
 #ifndef AFB_68080

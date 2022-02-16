@@ -1,0 +1,6 @@
+FROM LIB:c.o "Emu68Info.o"+"AsmFuncs.o"+"DeviceTree.o"+"MailBox.o"+"Modules.o"+"VC4Msg.o"+"VC4.o"
+TO "Emu68Info"
+LIB LIB:scm.lib
+    LIB:sc.lib LIB:amiga.lib
+NOICONS
+

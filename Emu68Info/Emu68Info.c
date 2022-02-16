@@ -79,14 +79,16 @@ MEMLIST/S,\
 MODULES/S,\
 POWERSTATE/S,\
 SETATTN,\
-SETBLANK/N,\
 SETCLOCKRATE/N,\
-SETGAMMA/N,\
+SETJITICNT/N,\
+SETJITIRNG/N,\
+SETJITLCNT/N,\
+SETJITSF/N,\
+SETJITSFL/K/N,\
 SETLED/N,\
 SETTURBO/N,\
 TEMPERATURE/S,\
 UPTIME/S,\
-VC4/S,\
 VOLTAGE/S\
 "
 typedef enum {
@@ -116,14 +118,16 @@ typedef enum {
 	OPT_MODULES,
 	OPT_POWERSTATE,
 	OPT_SETATTN,
-	OPT_SETBLANK,
 	OPT_SETCLOCKRATE,
-	OPT_SETGAMMA,
+	OPT_SETJITICNT,
+	OPT_SETJITIRNG,
+	OPT_SETJITLCNT,
+	OPT_SETJITSF,
+	OPT_SETJITSFL,
 	OPT_SETLED,
 	OPT_SETTURBO,
 	OPT_TEMPERATURE,
 	OPT_UPTIME,
-	OPT_VC4,
 	OPT_VOLTAGE,
 	OPT_COUNT
 } OPT_ARGS;
@@ -167,19 +171,32 @@ STRPTR unknown = "Unknown";
 
 /**********************************************************
  ** 
+ ** PrintTitle()
+ ** 
+ **********************************************************/
+
+void PrintTitle(STRPTR s)
+{
+	// \033n : Normal
+	// \033b : Bold
+	// \033u : Underline
+	
+	printf("\n\033b%s\033n\n\n", s);
+}
+
+/**********************************************************
+ ** 
  ** Help()
  ** 
  **********************************************************/
 
 ULONG Help(void)
 {
-	printf(verstring + 6);
-	
+	PrintTitle(verstring + 6);
+
 	printf(
-	"\n"
-	"\n"
 	"HELP           : Get this help\n"
-	"AMIGA          : Get System Amiga information\n"
+	"AMIGA          : Get Amiga  information\n"
 	"BOARD          : Get RPi    Board information\n"
 	"BOARDID        : Get RPi    Board identifier ($RC)\n"
 	"BOARDNAME      : Get RPi    Board Name\n"
@@ -194,23 +211,27 @@ ULONG Help(void)
 	"DETECT         : Get Emu68  Detection ($RC)\n"
 	"DMA            : Get RPi    DMA information\n"
 	"EDID           : Get RPi    EDID information\n"
-	"EXPANSION      : Get System Expansion list\n"
-	"HARDRESET      : !!! RPi    Hard Reset (Emu68 reload!)\n"
+	"EXPANSION      : Get Amiga  Expansion list\n"
+	"HARDRESET      : Set RPi    Hard Reset (Emu68 reload!)\n"
 	"IDSTRING       : Get Emu68  IdString\n"
 	"JIT            : Get Emu68  JIT information\n"
 	"LED            : Get RPi    LED information\n"
-	"MEMLIST        : Get System Memory list\n"
-	"MODULES        : Get System Module information\n"
+	"MEMLIST        : Get Amiga  Memory list\n"
+	"MODULES        : Get Amiga  Module information\n"
 	"POWERSTATE     : Get RPi    Power information\n"
-	"SETATTN        : Set System Exec AttnFlags (in Hexa)\n"
+	"SETATTN        : Set Amiga  Exec AttnFlags (in Hexa)\n"
 	"SETCLOCKRATE   : Set RPi    ARM clock rate in MHz\n"
-	"SETLED         : Set RPi    LED state (0=Off, 1=On)\n"
-	"SETTURBO       : Set RPi    Turbo-Mode (0=Off, 1=On)\n"
+	"SETJITICNT,    : Set Emu68  JIT instruction depth (Min: 1, Max: 256)\n"
+	"SETJITIRNG,    : Set Emu68  JIT inlining range (Min: 0, Max: 65535)\n"
+	"SETJITLCNT,    : Set Emu68  JIT inline loop count (Min: 1, Max: 16)\n"
+	"SETJITSF,      : Set Emu68  JIT use soft flush (Off: 0, On: 1)\n"
+	"SETJITSFL,     : Set Emu68  JIT soft flush limit (Min: 1, Max: 4000)\n"
+	"SETLED         : Set RPi    LED state (Off: 0, On: 1)\n"
+	"SETTURBO       : Set RPi    Turbo-Mode (Off: 0, On: 1)\n"
 	"TEMPERATURE    : Get RPi    Temperature information\n"
 	"UPTIME         : Get RPi    UpTime ($RC)\n"
-	"VC4            : Get Emu68  VC4-drivers information ($RC)\n"
 	"VOLTAGE        : Get RPi    Voltage information\n"
-	"\nAmiga Rulez!\n");
+	);
 	
 	return (RETURN_OK);
 }
@@ -278,21 +299,6 @@ void PrintFreq(UBYTE * buf, ULONG value, BOOL align)
 		
 		sprintf(buf, fmt, value, r, units[i]);
 	}
-}
-
-/**********************************************************
- ** 
- ** PrintTitle()
- ** 
- **********************************************************/
-
-void PrintTitle(STRPTR s)
-{
-	// \033n : Normal
-	// \033b : Bold
-	// \033u : Underline
-	
-	printf("\n\033b%s\033n\n\n", s);
 }
 
 /**********************************************************
@@ -1030,21 +1036,21 @@ ULONG GetEDID(void)
  **********************************************************/
 
 #define MAXMODULES (9)
-
+	
 ULONG GetModules(void)
 {
 	ULONG i;
 	
 	Module Modules[] = {
-		{ MODULE_DEVICETREE, "emu68/idstring"     , 0, 0, 0, 0 },
-		{ MODULE_LIBRARY,    "exec.library"       , 0, 0, 0, 0 },
-		{ MODULE_LIBRARY,    "workbench.library"  , 0, 0, 0, 0 },
-		{ MODULE_LIBRARY,    "rtg.library"        , 0, 0, 0, 0 },
-		{ MODULE_RESOURCE,   "devicetree.resource", 0, 0, 0, 0 },
-		{ MODULE_DEVICE,     "brcm-sdhc.device"   , 0, 0, 0, 0 },
-		{ MODULE_LIBRARY,    "68040.library"      , 0, 0, 0, 0 },
-		{ MODULE_LIBRARY,    "emu68-vc4.card"     , 0, 0, 0, 0 },
-		{ MODULE_MSGPORT,    "Emu68 VC4"          , 0, 0, 0, 0 },
+		{ FALSE, MODULE_DEVICETREE, "emu68/idstring"     , 0, 0, 0, 0 },
+		{ FALSE, MODULE_LIBRARY,    "exec.library"       , 0, 0, 0, 0 },
+		{ FALSE, MODULE_LIBRARY,    "workbench.library"  , 0, 0, 0, 0 },
+		{ FALSE, MODULE_LIBRARY,    "rtg.library"        , 0, 0, 0, 0 },
+		{ FALSE, MODULE_RESOURCE,   "devicetree.resource", 0, 0, 0, 0 },
+		{ FALSE, MODULE_DEVICE,     "brcm-sdhc.device"   , 0, 0, 0, 0 },
+		{ FALSE, MODULE_LIBRARY,    "68040.library"      , 0, 0, 0, 0 },
+		{ FALSE, MODULE_LIBRARY,    "emu68-vc4.card"     , 0, 0, 0, 0 },
+		{ FALSE, MODULE_MSGPORT,    "Emu68 VC4"          , 0, 0, 0, 0 },
 	};
 	
 	PrintTitle("Emu68 modules information:");
@@ -1063,25 +1069,31 @@ ULONG GetModules(void)
 		"------",
 		"--------------------------------------");
 	
-	if (Modules_Load(Modules, MAXMODULES-1))
+	if (Modules_Load(Modules, MAXMODULES))
 	{
-		/*
 		for (i = 0; i < MAXMODULES; i++)
 		{
 			Module m = Modules[i];
 			
-			if (m.addr != NULL)
+			if (m.loaded)
 			{
 				printf("| $%08lx | %-20s | %3ld | %4ld | %s\n", 
-					m.addr, m.name, m.ver, m.rev, m.idString);
+					m.addr, 
+					m.name, 
+					m.ver, 
+					m.rev, 
+					m.idString);
 			}
 			else
 			{
 				printf("| $%08lx | %-20s | %3ld | %4ld | %s\n", 
-					0, m.name, 0, 0, "NOT LOADED");
+					0, 
+					m.name, 
+					0, 
+					0, 
+					"NOT LOADED");
 			}
-		}
-		*/
+		}		
 	}
 	
 	printf("\n");
@@ -1258,14 +1270,14 @@ ULONG GetJIT(void)
 	PrintSize(buf2, jit_size - jit_free, FALSE);
 	
 	printf("JIT control              : 0x%08lx\n", jit_ctrl);
-	printf("JIT cache size           : %s (Used: %s)\n", buf1, buf2);
-	printf("JIT cache misses         : %ld\n",     jit_cmiss);
-	printf("JIT instruction depth    : %ld\n",     jit_depth);
-	printf("JIT inlining range       : %ld\n",     jit_range);
-	printf("JIT inline loop count    : %ld\n",     jit_loop);
-	printf("JIT use soft flush       : %s\n",      jit_flush ? "Enabled" : "Disabled");
-	printf("JIT soft flush threshold : %ld\n",     jit_sfthresh);
-	printf("JIT units                : %ld\n",     jit_count);
+	printf("JIT cache usage          : %s (Max: %s)\n", buf2, buf1);
+	printf("JIT cache misses         : %ld\n", jit_cmiss);
+	printf("JIT instruction depth    : %ld (Min: 1, Max: 256)\n", jit_depth);
+	printf("JIT inlining range       : %ld (Min: 0, Max: 65535)\n", jit_range);
+	printf("JIT inline loop count    : %ld (Min: 1, Max: 16)\n", jit_loop);
+	printf("JIT use soft flush       : %s\n", jit_flush ? "Enabled" : "Disabled");
+	printf("JIT soft flush limit     : %ld (Min: 1, Max: 4000)\n", jit_sfthresh);
+	printf("JIT units                : %ld\n", jit_count);
 	printf("\n");
 	
 	return (RETURN_OK);
@@ -1537,44 +1549,7 @@ ULONG GetAmigaDenise(void)
 	
 	return (RETURN_OK);
 }
-/*
-ULONG GetAmigaDeniseId(void)
-{
-	STRPTR s;
-	UBYTE lo, hi;
-	UWORD id = *(volatile UWORD*)0xDFF07C;
-	
-	lo = id & 0xff;
-	hi = (id >> 8) & 0xff;
-	
-	s = "OCS Denise 8362";
-	
-	if ((lo & 1) == 1)
-	{
-		if (((lo >> 1) & 1) == 0)
-		{
-			s = "ECS Denise 8373";
-		}
-		
-		if (((lo >> 2) & 1) == 0)
-		{
-			if (hi != 0)
-			{
-				s = "AGA Lisa 4203 A4000";
-			}
-			else
-			{
-				s = "AGA Lisa 4203 A1200";
-			}
-		}
-	}
-	
-	printf("Denise/Lisa    : %s (rev: %ld)\n", 
-		s, 15 - ((lo >> 4) & 15));
-	
-	return (id);
-}
-*/
+
 /**********************************************************
  ** 
  ** GetAmigaDisplayFlags()
@@ -2383,8 +2358,8 @@ ULONG SetBlank(ULONG state)
 	
 	if (MailBox)
 	{
-		mbox_set_alpha_mode(state);
-	//	mbox_set_screen_blank(state);
+//		mbox_set_alpha_mode(state);
+//		mbox_set_screen_blank(state);
 		
 		result = RETURN_OK;
 	}
@@ -2428,6 +2403,169 @@ ULONG SetGamma(UBYTE value)
 	}
 	
 	return (result);
+}
+
+/**********************************************************
+ ** 
+ ** SetJITICNT()
+ ** Emu68 JIT Instruction Depth
+ ** Maximal JIT unit size
+ ** 
+ **********************************************************/
+
+ULONG SetJITICNT(ULONG value)
+{
+	APTR oldSysStack;
+	
+	if (value == 0)
+		value = 1;
+	
+	if (value > 256)
+		value = 256;
+	
+	if (oldSysStack = SuperState())
+	{
+		ULONG r = asm_jit_ctrl() & 0x00ffffff;
+		
+		r |= (value & 0xff) << 24;
+		
+		asm_jit_ctrl_set(r);
+		
+		UserState(oldSysStack);
+		
+		printf("JIT instruction depth set to %ld.\n", value);
+	}
+	
+	return (RETURN_OK);
+}
+
+/**********************************************************
+ ** 
+ ** SetJITIRNG()
+ ** Emu68 JIT inline range
+ ** Maximal distance for inline
+ ** 
+ **********************************************************/
+
+ULONG SetJITIRNG(ULONG value)
+{
+	APTR oldSysStack;
+	
+	if (value > 65535)
+		value = 65535;
+	
+	if (oldSysStack = SuperState())
+	{
+		ULONG r = asm_jit_ctrl() & 0xff0000ff;
+		
+		r |= (value & 0xffff) << 8;
+		
+		asm_jit_ctrl_set(r);
+		
+		UserState(oldSysStack);
+		
+		printf("JIT inline range set to %ld.\n", value);
+	}
+	
+	return (RETURN_OK);
+}
+
+/**********************************************************
+ ** 
+ ** SetJITLCNT()
+ ** Emu68 JIT inline loop count
+ ** Inline loop count
+ ** 
+ **********************************************************/
+
+ULONG SetJITLCNT(ULONG value)
+{
+	APTR oldSysStack;
+	
+	if (value == 0)
+		value = 1;
+	
+	if (value > 16)
+		value = 16;
+	
+	if (oldSysStack = SuperState())
+	{
+		ULONG r = asm_jit_ctrl() & 0xffffff0f;
+		
+		r |= (value & 0xf) << 4;
+		
+		asm_jit_ctrl_set(r);
+		
+		UserState(oldSysStack);
+		
+		printf("JIT inline loop count set to %ld.\n", value);
+	}
+	
+	return (RETURN_OK);
+}
+
+/**********************************************************
+ ** 
+ ** SetJITSOFTFLUSH()
+ ** Emu68 JIT soft flush
+ ** Use "soft flush" of JIT cache
+ ** 
+ **********************************************************/
+
+ULONG SetJITSOFTFLUSH(ULONG value)
+{
+	APTR oldSysStack;
+	
+	if (value > 1)
+		value = 1;
+	
+	if (oldSysStack = SuperState())
+	{
+		ULONG r = asm_jit_ctrl();
+		
+		if (value)
+			r |= 1;
+		else
+			r &= ~1;
+		
+		asm_jit_ctrl_set(r);
+		
+		UserState(oldSysStack);
+		
+		printf("JIT use soft flush set to %ld.\n", value);
+	}
+	
+	return (RETURN_OK);
+}
+
+/**********************************************************
+ ** 
+ ** SetJITSOFTFLUSHLIMIT()
+ ** Emu68 JIT soft flush liimit
+ ** JIT threshold for soft cache flushes
+ ** 
+ **********************************************************/
+
+ULONG SetJITSOFTFLUSHLIMIT(ULONG value)
+{
+	APTR oldSysStack;
+	
+	if (value == 0)
+		value = 1;
+	
+	if (value > 4000)
+		value = 4000;
+	
+	if (oldSysStack = SuperState())
+	{
+		asm_jit_sfthresh_set(value);
+		
+		UserState(oldSysStack);
+		
+		printf("JIT soft flush limit set to %ld.\n", value);
+	}
+	
+	return (RETURN_OK);
 }
 
 /**********************************************************
@@ -2612,18 +2750,33 @@ ULONG main(ULONG argc, char *argv[])
 					
 					if (opts[OPT_POWERSTATE])
 						result = GetPowerState();
-					
+					/*
 					if (opts[OPT_SETBLANK])
 						result = SetBlank(*(LONG *)opts[OPT_SETBLANK]);
-					
+					*/
 					if (opts[OPT_SETATTN])
 						result = SetAttnFlags((STRPTR)opts[OPT_SETATTN]);
 					
 					if (opts[OPT_SETCLOCKRATE])
 						result = SetClockRate(*(LONG *)opts[OPT_SETCLOCKRATE]);
-					
+					/*
 					if (opts[OPT_SETGAMMA])
 						result = SetGamma(*(LONG *)opts[OPT_SETGAMMA]);
+					*/
+					if (opts[OPT_SETJITICNT])
+						result = SetJITICNT(*(ULONG *)opts[OPT_SETJITICNT]);
+					
+					if (opts[OPT_SETJITIRNG])
+						result = SetJITIRNG(*(ULONG *)opts[OPT_SETJITIRNG]);
+					
+					if (opts[OPT_SETJITLCNT])
+						result = SetJITLCNT(*(ULONG *)opts[OPT_SETJITLCNT]);
+					
+					if (opts[OPT_SETJITSF])
+						result = SetJITSOFTFLUSH(*(ULONG *)opts[OPT_SETJITSF]);
+					
+					if (opts[OPT_SETJITSFL])
+						result = SetJITSOFTFLUSHLIMIT(*(ULONG *)opts[OPT_SETJITSFL]);
 					
 					if (opts[OPT_SETLED])
 						result = SetLED(*(LONG *)opts[OPT_SETLED]);
@@ -2636,10 +2789,10 @@ ULONG main(ULONG argc, char *argv[])
 					
 					if (opts[OPT_UPTIME])
 						result = GetBootTime();
-					
+					/*
 					if (opts[OPT_VC4])
 						result = GetVC4Info();
-					
+					*/
 					if (opts[OPT_VOLTAGE])
 						result = GetVoltage();
 				}

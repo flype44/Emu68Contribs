@@ -12,16 +12,8 @@
 #endif
 
 void ASM asm_nop(void);
-
-void ASM asm_reset_rpi(void);
-
-ULONG ASM asm_le32(
-	REG(d0,ULONG a));
-
-ULONG ASM asm_div64(
-	REG(d0,ULONG a), 
-	REG(d1,ULONG b), 
-	REG(d2,ULONG c));
+ULONG ASM asm_le32(REG(d0,ULONG a));
+ULONG ASM asm_div64(REG(d0,ULONG a), REG(d1,ULONG b), REG(d2,ULONG c));
 
 ULONG asm_cpu_cacr(void);
 ULONG asm_cpu_vbr(void);
@@ -40,7 +32,9 @@ ULONG ASM asm_jit_size(void);
 ULONG ASM asm_jit_free(void);
 ULONG ASM asm_jit_count(void);
 ULONG ASM asm_jit_sfthresh(void);
+ULONG ASM asm_jit_sfthresh_set(REG(d0, ULONG a));
 ULONG ASM asm_jit_ctrl(void);
+ULONG ASM asm_jit_ctrl_set(REG(d0, ULONG a));
 ULONG ASM asm_jit_cmiss(void);
 
 ULONG ASM asm_dbg_ctrl(void);

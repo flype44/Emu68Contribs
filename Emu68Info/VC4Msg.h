@@ -23,25 +23,25 @@ struct VC4Msg {
         struct {
             UBYTE val;
         } SetPhase;
-
+		
         struct {
             UBYTE val;
         } SetScaler;
-
+		
         struct {
             UBYTE val;
         } GetPhase;
-
+		
         struct {
             UBYTE val;
         } GetScaler;
-
+		
         struct {
             UBYTE kernel;
             double b;
             double c;
         } SetKernel;
-
+		
         struct {
             UBYTE kernel;
             double b;

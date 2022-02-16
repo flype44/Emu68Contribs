@@ -24,13 +24,14 @@ typedef enum {
 	MODULE_DEVICETREE // 5
 } MODULE_TYPE;
 
-typedef struct {
+typedef struct Module {
+	BOOL   loaded;
 	ULONG  type;
 	STRPTR name;
 	APTR   addr;
 	ULONG  ver;
 	ULONG  rev;
-	STRPTR idString;
+	UBYTE  idString[256];
 } Module;
 
 /**********************************************************
@@ -39,6 +40,8 @@ typedef struct {
  ** 
  **********************************************************/
 
-ULONG Modules_Load(Module modules[], ULONG count);
+ULONG Modules_Load(
+	Module modules[],
+	ULONG  count);
 
 #endif /* __MODULES_H */
