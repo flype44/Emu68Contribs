@@ -1,0 +1,79 @@
+
+   NAME
+	DEVICETREE - Print contents of the devicetree.resource.
+
+   VERSION
+	DeviceTree 1.0 (14.1.2023) Philippe CARPENTIER
+
+   FORMAT
+	DEVICETREE [KEY] [PROPERTY] [VALUE] [LEVEL] [HELP]
+
+   TEMPLATE
+	KEY,PROPERTY,VALUE,LEVEL/N,HELP/S
+
+   PATH
+	C:DEVICETREE
+
+   FUNCTION
+   	DEVICETREE allows you to read the content of the devicetree.resource.
+   	The devicetree.resource is a library that is available only in a Amiga
+   	that is equipped with a PiStorm/Emu68 accelerator, and it contains a
+   	tree of keypair values which comes from the Raspberry firmware itself.
+   	This tool is eventually useful for Emu68 developers or advanced users.
+
+   RESULT
+   	Returns 20 (FAIL) : Wrong DOS arguments
+   	Returns 20 (FAIL) : Can not find "devicetree.resource"
+   	Returns 05 (WARN) : Can not find a key or property or value
+   	Returns 00 (OK)   : Found a key or property or value
+
+   OPTIONS
+
+   	KEY:      Key to find (optional).
+
+   	PROPERTY: Property to find (optional).
+
+   	VALUE:    Value to find (strings only) (optional).
+
+   	LEVEL:    Level of verbosity (optional)
+   		  LEVEL=0: Print out the found keys (Default).
+   		  LEVEL=1: Print out the found keys + values (short).
+   		  LEVEL=2: Print out the found keys + values (dump).
+
+   	HELP:     This Help.
+
+   EXAMPLES
+
+   	> DEVICETREE LEVEL=0 >dt0.txt
+   	> DEVICETREE LEVEL=1 >dt1.txt
+
+   	> DEVICETREE emu68
+   	["/emu68"]["idstring"] : chars[43]
+   	["/emu68"]["git-hash"] : chars[40]
+   	["/emu68"]["vc4-mem"] : long[8]
+
+   	> DEVICETREE emu68 LEVEL=1
+   	["/emu68"]["idstring"] : chars[43] = "$VER: Emu68 0.11.4 (31.12.2022) git:33caf66U"
+   	["/emu68"]["git-hash"] : chars[40] = "33caf66414033a330e161d26979b0666c9c03fd1"
+   	["/emu68"]["vc4-mem"] : long[8] = 1D 00 00 00 01 00 00 00
+
+   	> DEVICETREE emu68 idstring LEVEL=1
+   	["/emu68"]["idstring"] : chars[43] = "$VER: Emu68 0.11.4 (31.12.2022) git:33caf66U"
+
+   	> DEVICETREE "" "" model LEVEL=1
+   	["/"]["compatible"] : chars[40] = "raspberrypi,3-model-b-plus"
+
+   	> DEVICETREE "" "" "$VER" LEVEL=2
+   	["/emu68"]["idstring"] : chars[43]
+   	0000 | 24 56 45 52  3A 20 45 6D  75 36 38 20  30 2E 31 31 | $VER: Emu68 0.11
+   	0010 | 2E 34 20 28  33 31 2E 31  32 2E 32 30  32 32 29 20 | .4 (31.12.2022) 
+   	0020 | 67 69 74 3A  33 33 63 61  66 36 36 --  -- -- -- -- | git:33caf66-----
+
+   	> DEVICETREE "/" "model" "Raspberry Pi 3" >NIL:
+   	> IF NOT WARN
+   	>   ECHO "Your RPi model is a RPi3"
+   	> ENDIF
+
+   SEE ALSO
+   	EMUCONTROL, EMU68INFO
+

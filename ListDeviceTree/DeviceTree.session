@@ -1,0 +1,19 @@
+Codecraft session file
+DATA:Sources/ListDeviceTree/DeviceTree.c
+215
+3
+EndOfBreakPoints
+IsCurrentDocument
+EndOfPersistedFile
+DATA:Sources/ListDeviceTree/DeviceTree.h
+20
+0
+EndOfBreakPoints
+EndOfPersistedFile
+DATA:Sources/ListDeviceTree/SMakeFile
+5
+0
+EndOfBreakPoints
+EndOfPersistedFile
+BeginExpandedNodes
+EndOfExpandedNodes

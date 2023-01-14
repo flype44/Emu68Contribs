@@ -1,0 +1,8 @@
+all: DeviceTree.o
+
+clean:
+	delete DeviceTree.o
+	delete DeviceTree.lnk
+
+.c.o:
+	sc LINK $*.c PROGRAMNAME $* NOICON
