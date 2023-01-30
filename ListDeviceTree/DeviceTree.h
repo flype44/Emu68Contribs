@@ -8,7 +8,11 @@
 #include <exec/libraries.h>
 
 #define APP_NAME    "DeviceTree"
-#define APP_VSTRING "$VER: DeviceTree 1.0 (14.1.2023) Philippe CARPENTIER\n"
+#ifdef VERSION_STRING
+#define APP_VSTRING VERSION_STRING " Philippe CARPENTIER";
+#else
+#define APP_VSTRING "$VER: " APP_NAME " 1.0 (14.1.2023) Philippe CARPENTIER\n"
+#endif
 
 #define COLOR0 "\033[30m"
 #define COLOR1 "\033[31m"
