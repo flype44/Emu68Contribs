@@ -1,6 +1,6 @@
 #################################################
 #
-# GCC Makefile for "Emu68Info"
+# GCC Makefile for "ListDeviceTree"
 # for m68k-amigaos-gcc
 # 
 #################################################
