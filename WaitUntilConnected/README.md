@@ -1,4 +1,4 @@
-**WaitUntilConnected** version 0.2
+**WaitUntilConnected** version 0.3
 
 **Description**
 
@@ -42,14 +42,23 @@ DELAY=25
 
 ```
 ; Network-startup script for the PiStorm/Emu68 WiFiPi.device and RoadShow
+
 FailAt 30
+
 Run <>NIL: C:WirelessManager DEVICE="wifipi.device" UNIT=0 CONFIG="ENVARC:Sys/Wireless.prefs"
+
 C:WaitUntilConnected DEVICE="DEVS:Networks/wifipi.device" UNIT=0 DELAY=100
-Run >NIL: NetLogViewer CX_POPUP=NO
-C:AddNetInterface DEVS:NetInterfaces/WiFiPi
+
+IF NOT WARN
+    Run >NIL: NetLogViewer CX_POPUP=NO
+    C:AddNetInterface DEVS:NetInterfaces/WiFiPi
+ENDIF
 ```
 
 **Remarks:**
 
-The `DELAY` option is not mandatory, but can eventually be useful in case the WiFi key negociation takes a bit longer than expected.
-This is because the **SANA2** `S2EVENT_CONNECT` occurs **BEFORE** the WiFi key negociation is done. It would have been nice that the **SANA2** protocol offered a new event to inform the key negociation is completed.
+The `DELAY` option is not mandatory, but can eventually be useful in case the WiFi key negociation takes a bit longer than expected. This is because the **SANA2** `S2EVENT_CONNECT` occurs **BEFORE** the WiFi key negociation is done. It would have been nice that the **SANA2** protocol offered a new event to inform the key negociation is completed.
+
+The command will exit itself after a **TIMEOUT** of ~ 1 minute.
+
+In case of **TIMEOUT** or **CTRL+C** the DOS **WARN** Return Code ($RC) is returned.
