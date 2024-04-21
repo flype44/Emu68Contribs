@@ -1,0 +1,11 @@
+#
+# smakefile for WaitUntilConnected (SAS/C 6.x)
+#
+# Philippe CARPENTIER, 2024
+#
+
+WaitUntilConnected: WaitUntilConnected.o
+	$(CC) $(CFLAGS) LINK $@.o TO $@
+
+clean:
+	delete #?.(o|lnk)
