@@ -1,6 +1,6 @@
 /******************************************************************************
  * 
- * WaitUntilConnected version 0.2
+ * WaitUntilConnected version 0.3
  * 
  * Short:
  * WaitUntilConnected is a simple SANA2 tool.
@@ -78,11 +78,13 @@ struct Device     * SanaDev  = NULL;
  * S2Listen()
  ******************************************************************************/
 
-void S2Listen(void)
+BOOL S2Listen(void)
 {
-	BOOL bContinue = TRUE;
+	BOOL  result     = FALSE;
+	BOOL  bContinue  = TRUE;
+	ULONG iterations = 120; // (120 * DEFAULT_DELAY) ~= 1 minute.
 	
-	// SANA2 ONEVENT -> S2EVENT_CONNECT
+	// Query the SANA2 device (ONEVENT -> S2EVENT_CONNECT)
 	
 	SanaReq->ios2_Req.io_Command = S2_ONEVENT;
 	SanaReq->ios2_Req.io_Error   = 0;
@@ -92,11 +94,21 @@ void S2Listen(void)
 	
 	SendIO((struct IORequest *)SanaReq);
 	
-	// Wait until the device is CONNECTED
+	// Wait until the device is CONNECTED (or CTRL+C, or TimeOut).
 	
 	while (bContinue)
 	{
 		struct Message * msg;
+		
+		// Check TimeOut
+		
+		if (!iterations--)
+		{
+			bContinue = FALSE;
+			result = FALSE;
+		}
+		
+		// Check Message Port
 		
 		if (msg = GetMsg(SanaPort))
 		{
@@ -108,17 +120,21 @@ void S2Listen(void)
 			}
 			
 			bContinue = FALSE;
+			result = TRUE;
 		}
+		
+		// Check CTRL+C
 		
 		if (SetSignal(0L, SIGBREAKF_CTRL_C) & SIGBREAKF_CTRL_C)
 		{
 			bContinue = FALSE;
+			result = FALSE;
 		}
 		
 		Delay(DEFAULT_DELAY);
 	}
 	
-	return;
+	return result;
 }
 
 /******************************************************************************
@@ -127,7 +143,7 @@ void S2Listen(void)
 
 ULONG main(ULONG argc, UBYTE *argv[])
 {
-	ULONG RC = RETURN_ERROR;
+	ULONG RC = RETURN_FAIL;
 	
 	if (argc >= 1)
 	{
@@ -183,15 +199,17 @@ ULONG main(ULONG argc, UBYTE *argv[])
 							if (SanaDev != NULL)
 							{
 								// Wait for the S2EVENT_CONNECT event.
-								S2Listen();
+								
+								RC = S2Listen() ? RETURN_OK : RETURN_WARN;
 								
 								// Add an extra delay, because S2EVENT_CONNECT
 								// occurs BEFORE the WiFi key negociation is done.
+								
 								Delay(extraDelay);
 								
 								// Ending...
+								
 								CloseDevice((struct IORequest *)SanaReq);
-								RC = RETURN_OK;
 							}
 						}
 						else
