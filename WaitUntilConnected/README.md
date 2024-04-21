@@ -1,6 +1,6 @@
-**WaitUntilConnected** version 0.3
+# **WaitUntilConnected** version 0.3
 
-**Description**
+## **Description**
 
 `WaitUntilConnected` is a simple **SANA2** tool.
 
@@ -12,7 +12,7 @@ Compiled with SAS/C 6.59 for AmigaOS/M68K.
 
 Freely distributed for non-commercial purposes.
 
-**Arguments**
+## **Arguments**
 
 ```
 DEVICE: The SANA2 device name (full path).
@@ -20,7 +20,7 @@ UNIT:   The SANA2 device unit number.
 DELAY:  Extra delay (in ticks, 50 per second).
 ```
 
-**Defaults**
+## **Defaults**
 
 ```
 DEVICE="DEVS:Networks/wifipi.device"
@@ -28,7 +28,7 @@ UNIT=0
 DELAY=25
 ```
  
-**Syntax**
+## **Syntax**
 
 `C:WaitUntilConnected ?`
 
@@ -38,7 +38,7 @@ DELAY=25
 
 `C:Version FULL C:WaitUntilConnected`
  
-**Example**
+## **Example**
 
 ```
 ; Network-startup script for the PiStorm/Emu68 WiFiPi.device and RoadShow
@@ -55,7 +55,7 @@ IF NOT WARN
 ENDIF
 ```
 
-**Remarks**
+## **Remarks**
 
 The `DELAY` option is not mandatory, but can eventually be useful in case the WiFi key negociation takes a bit longer than expected. This is because the **SANA2** `S2EVENT_CONNECT` occurs **BEFORE** the WiFi key negociation is done. It would have been nice that the **SANA2** protocol offered a new event to inform the key negociation is completed.
 
