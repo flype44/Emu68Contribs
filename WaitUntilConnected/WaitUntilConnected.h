@@ -9,7 +9,7 @@
 #define APP_DESCR    "Wait until the SANA2 device is CONNECTED."
 #define APP_AUTHOR   "Philippe CARPENTIER"
 #define APP_VERSION  "0"
-#define APP_REVISION "2"
+#define APP_REVISION "3"
 #define APP_DATE     "21.4.2024"
 #define APP_TITLE    APP_NAME " by " APP_AUTHOR
 #define APP_VSTRING  "$VER: " APP_NAME " " APP_VERSION "." APP_REVISION " (" APP_DATE ") [SAS/C 6.59] (C) " APP_AUTHOR
