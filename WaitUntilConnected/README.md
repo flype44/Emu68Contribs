@@ -41,6 +41,8 @@ DELAY=25
 **Example:**
 
 ```
+; Network-startup script for the PiStorm/Emu68 WiFiPi.device and RoadShow
+FailAt 30
 Run <>NIL: C:WirelessManager DEVICE="wifipi.device" UNIT=0 CONFIG="ENVARC:Sys/Wireless.prefs"
 C:WaitUntilConnected DEVICE="DEVS:Networks/wifipi.device" UNIT=0 DELAY=100
 Run >NIL: NetLogViewer CX_POPUP=NO
