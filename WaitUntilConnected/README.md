@@ -1,8 +1,8 @@
 **WaitUntilConnected** version 0.2
 
-**Short**
+**Description**
 
-WaitUntilConnected is a simple SANA2 tool.
+`WaitUntilConnected` is a simple **SANA2** tool.
 
 It waits until the SANA2 device is **CONNECTED** and is intended to be used with the **RoadShow TCP/IP stack**, but not exclusive.
  
