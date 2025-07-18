@@ -12,7 +12,11 @@
 #define APP_REVISION "3"
 #define APP_DATE     "21.4.2024"
 #define APP_TITLE    APP_NAME " by " APP_AUTHOR
+#ifdef VERSION_STRING
+#define APP_VSTRING VERSION_STRING " "APP_AUTHOR;
+#else
 #define APP_VSTRING  "$VER: " APP_NAME " " APP_VERSION "." APP_REVISION " (" APP_DATE ") [SAS/C 6.59] (C) " APP_AUTHOR
+#endif
 
 /******************************************************************************
  * DEFINES FOR ARGUMENTS
