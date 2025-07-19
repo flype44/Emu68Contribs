@@ -8,9 +8,14 @@ add_compile_definitions(PRIVATE VERSION_STRING="${VERSTRING}")
 
 enable_language(ASM_VASM)
 
-file(GLOB_RECURSE SOURCE *.c)
-
-add_executable(Emu68Info ${SOURCE})
+add_executable(Emu68Info
+    Emu68Info.c
+    DeviceTree.c
+    MailBox.c
+    Modules.c
+    VC4Msg.c
+    VC4.c
+)
 
 add_custom_command(
   TARGET Emu68Info POST_BUILD
