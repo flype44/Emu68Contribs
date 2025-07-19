@@ -8,9 +8,9 @@ add_compile_definitions(PRIVATE VERSION_STRING="${VERSTRING}")
 
 enable_language(ASM_VASM)
 
-file(GLOB_RECURSE SOURCE *.c)
-
-add_executable(ListDeviceTree ${SOURCE})
+add_executable(ListDeviceTree
+    DeviceTree.c
+)
 
 
 target_link_libraries(ListDeviceTree devicetree)
