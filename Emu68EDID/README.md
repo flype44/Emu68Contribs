@@ -4,7 +4,7 @@
 
 The `Emu68EDID` program is an AmigaOS command line tool, for [PiStorm](https://github.com/captain-amygdala/pistorm)/[Emu68](https://github.com/michalsc/Emu68/releases), to gather information from the connected display (monitor or TV), through the Raspberry Pi > Mailbox interface > [Get EDID block](https://github.com/raspberrypi/firmware/wiki/Mailbox-property-interface#get-edid-block).
 
-This program retrieves the [EDID](https://en.wikipedia.org/wiki/Extended_Display_Identification_Data) data from your monitor, parse it, and outputs the decoded data.
+This program retrieves the [EDID](https://en.wikipedia.org/wiki/Extended_Display_Identification_Data) data (Extended Display Identification Data) from your monitor, parse it, and outputs the decoded data.
 
 This allows identifies, for example, the best native preferred resolution supported by a display device (old display may not support this feature).
 
