@@ -1,0 +1,18 @@
+###############################################################################
+#
+# SAS/C Makefile for "Emu68EDID"
+# for SAS/C Amiga Compiler 6.59
+# 
+###############################################################################
+
+OUTFILE=Emu68EDID
+
+OBJECTS=Main.o AsmFuncs.o DeviceTree.o MailBox.o EDID.o
+
+all: $(OUTFILE)
+
+clean:
+	@delete $(OBJECTS)
+
+$(OUTFILE): $(OBJECTS)
+	sc MATH=STANDARD LIB:amiga.lib CHKABORT NOICONS STRIPDEBUG TO $(OUTFILE) LINK $(OBJECTS)
