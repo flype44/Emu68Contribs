@@ -1,7 +1,7 @@
 #ifndef __EDID_H
 #define __EDID_H
 
-typedef struct MonitorInfo MonitorInfo;
+typedef struct _MonitorInfo _MonitorInfo;
 typedef struct Timing Timing;
 typedef struct DetailedTiming DetailedTiming;
 
@@ -79,13 +79,13 @@ struct DetailedTiming
     } ad;
 };
 
-struct MonitorInfo
+struct _MonitorInfo
 {
     int			checksum;
     char		manufacturer_code[4];
     int			product_code;
     unsigned int	serial_number;
-    
+
     int			production_week;	/* -1 if not specified */
     int			production_year;	/* -1 if not specified */
     int			model_year;		/* -1 if not specified */
@@ -94,7 +94,7 @@ struct MonitorInfo
     int			minor_version;
 
     int			is_digital;
-    
+
     union
     {
 	struct
@@ -147,12 +147,12 @@ struct MonitorInfo
 
     Timing		established[24];	/* Terminated by 0x0x0 */
     Timing		standard[8];
-    
+
     int			n_detailed_timings;
     DetailedTiming	detailed_timings[4];	/* If monitor has a preferred
 						 * mode, it is the first one
 						 * (whether it has, is
-						 * determined by the 
+						 * determined by the
 						 * preferred_timing_includes
 						 * bit.
 						 */
@@ -162,10 +162,9 @@ struct MonitorInfo
     char		dsc_product_name[14];
     char		dsc_string[14];		/* Unspecified ASCII data */
 };
-
-MonitorInfo * decode_edid (const unsigned char * data);
-void dump_monitor_info (MonitorInfo * info);
-void dump_monitor_info_short (MonitorInfo * info);
-void free_monitor_info (MonitorInfo *info);
+_MonitorInfo * decode_edid (const unsigned char * data);
+void dump_monitor_info (_MonitorInfo * info);
+void dump_monitor_info_short (_MonitorInfo * info);
+void free_monitor_info (_MonitorInfo *info);
 
 #endif

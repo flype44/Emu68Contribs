@@ -11,3 +11,9 @@ CPMDeclarePackage(CMakeAmigaCommon
   GIT_TAG 1.0.7
   GITHUB_REPOSITORY AmigaPorts/cmake-amiga-common-library
 )
+# Emu68 devicetree.resource
+CPMDeclarePackage(devicetree.resource
+  GIT_TAG 064095a749f72df8fa5165670a7ed16911a566c7
+  GITHUB_REPOSITORY michalsc/devicetree.resource
+  EXCLUDE_FROM_ALL YES
+)

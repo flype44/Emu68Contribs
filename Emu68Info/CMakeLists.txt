@@ -23,8 +23,8 @@ add_custom_command(OUTPUT ${PROJECT_BINARY_DIR}/AsmFuncs.vasm
   VERBATIM
 )
 
-add_custom_target(AsmFuncs_gen_vasm DEPENDS ${PROJECT_BINARY_DIR}/AsmFuncs.vasm)
-add_dependencies(Emu68Info AsmFuncs_gen_vasm)
+add_custom_target(AsmFuncs_gen_vasm${PROJECT_NAME} DEPENDS ${PROJECT_BINARY_DIR}/AsmFuncs.vasm)
+add_dependencies(Emu68Info AsmFuncs_gen_vasm${PROJECT_NAME})
 
 target_link_libraries(Emu68Info devicetree)
 
