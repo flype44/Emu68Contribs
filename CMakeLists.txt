@@ -1,21 +1,14 @@
-# CPM BEGIN
+cmake_minimum_required(VERSION 3.14.0)
+project(Emu68Contribs)
+
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(CPM-init)
 
-include(CPM)
-
-set(CPM_SOURCE_CACHE "${CMAKE_CURRENT_SOURCE_DIR}/external")
-CPMUsePackageLock(package-lock.cmake)
-
-CPMGetPackage(CPMLicenses.cmake)
-CPMGetPackage(CMakeAmigaCommon)
-
-if(NOT TARGET write-licenses)
-	cpm_licenses_create_disclaimer_target(
-		write-licenses "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/third_party.txt" "${CPM_PACKAGES}"
-	)
+if(NOT TARGET devicetree)
+    CPMGetPackage(devicetree.resource)
 endif()
-# CPM END
 
+add_subdirectory(Emu68EDID)
 add_subdirectory(Emu68Info)
 add_subdirectory(ListDeviceTree)
 add_subdirectory(WaitUntilConnected)
