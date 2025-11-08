@@ -8,6 +8,6 @@ CPMDeclarePackage(CPMLicenses.cmake
 )
 # Common CMake additions for Amiga
 CPMDeclarePackage(CMakeAmigaCommon
-  GIT_TAG 1.0.1
+  GIT_TAG 1.0.7
   GITHUB_REPOSITORY AmigaPorts/cmake-amiga-common-library
 )
