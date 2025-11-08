@@ -16,11 +16,6 @@ add_executable(Emu68Info
     VC4.c
 )
 
-add_custom_command(
-  TARGET Emu68Info POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E rm ${PROJECT_BINARY_DIR}/AsmFuncs.vasm
-  VERBATIM)
-
 add_custom_command(OUTPUT ${PROJECT_BINARY_DIR}/AsmFuncs.vasm
   COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/AsmFuncs.a ${PROJECT_BINARY_DIR}/AsmFuncs.vasm
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
