@@ -8,10 +8,8 @@
 
 #include <dos/dos.h>
 #include <exec/exec.h>
-#include <utility/utility.h>
 #include <proto/dos.h>
 #include <proto/exec.h>
-#include <proto/utility.h>
 #include <proto/devicetree.h>
 #include "main.h"
 
@@ -53,7 +51,7 @@ struct Emu68VersionStruct {
 static VOID  GetEmu68Help(VOID);
 static APTR  GetEmu68Property(STRPTR);
 static ULONG GetEmu68Version(LONG *);
-
+ 
 /*****************************************************************************
  * 
  * GLOBALS
@@ -61,11 +59,12 @@ static ULONG GetEmu68Version(LONG *);
  *****************************************************************************/
 
 APTR DeviceTreeBase = NULL;
-STRPTR VerString = VERSTRING;
-
-extern struct ExecBase   * SysBase;
+extern struct ExecBase * SysBase;
 extern struct DosLibrary * DOSBase;
-extern struct Library    * UtilityBase;
+
+static STRPTR VerString = VERSTRING;
+static struct Emu68VersionStruct versionOld;
+static struct Emu68VersionStruct * version = NULL;
 
 /*****************************************************************************
  * 
@@ -105,6 +104,26 @@ static APTR GetEmu68Property(STRPTR propertyName)
 
 /*****************************************************************************
  * 
+ * ParseEmu68IdString()
+ * 
+ *****************************************************************************/
+
+static struct Emu68VersionStruct * ParseEmu68IdString(STRPTR idString)
+{
+	STRPTR s = (STRPTR)((ULONG)idString + 6);
+	
+	while (*s && *s != ' ') s++;
+	
+	s += 1;
+	s += StrToLong(s, (LONG *)&versionOld.ver_major) + 1;
+	s += StrToLong(s, (LONG *)&versionOld.ver_minor) + 1;
+	s += StrToLong(s, (LONG *)&versionOld.ver_patch) + 1;
+	
+	return (&versionOld);
+}
+
+/*****************************************************************************
+ * 
  * GetEmu68Version()
  * 
  *****************************************************************************/
@@ -112,19 +131,25 @@ static APTR GetEmu68Property(STRPTR propertyName)
 static ULONG GetEmu68Version(LONG * opts)
 {
 	APTR value = NULL;
-	struct Emu68VersionStruct * version = NULL;
 	
-	// VERSION
+	// GET version using the new method (Emu68 >= 1.1)
 	if (value = GetEmu68Property("version")) {
 		version = (struct Emu68VersionStruct *)value;
-		if (!opts[OPT_SHORT] && !opts[OPT_FULL] && 
-			!opts[OPT_GITHASH] && !opts[OPT_VARIANT]) {
+	} else {
+		// GET version using the old method (Emu68 < 1.1)
+		if (value = GetEmu68Property("idstring")) {
+			version = ParseEmu68IdString((STRPTR)value);
+		} else {
+			Printf("Cant open the emu68/idstring property!\n");
+			return (RETURN_ERROR);
+		}
+	}
+	
+	// VERSION
+	if (!opts[OPT_SHORT] && !opts[OPT_FULL] && 
+		!opts[OPT_GITHASH] && !opts[OPT_VARIANT]) {
 			Printf("Emu68 %ld.%ld.%ld\n", version->ver_major, 
 				version->ver_minor, version->ver_patch);
-		}
-	} else {
-		Printf("Cant open the emu68/version property!\n");
-		return (RETURN_ERROR);
 	}
 	
 	// SHORT
