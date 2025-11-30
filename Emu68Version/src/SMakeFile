@@ -1,0 +1,18 @@
+#################################################
+#
+# SAS/C Makefile for "Emu68Version"
+# for AmigaOS M68K SAS/C 6.59 Compiler
+# 
+#################################################
+
+OUTFILE=Emu68Version
+
+OBJECTS=main.o 
+
+all: $(OUTFILE)
+
+clean:
+	@delete $(OBJECTS)
+
+$(OUTFILE): $(OBJECTS)
+	sc CPU=68000 MATH=STANDARD LIB:amiga.lib CHKABORT NOICONS STRIPDEBUG LINK $(OBJECTS) TO $(OUTFILE)
