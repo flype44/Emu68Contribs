@@ -34,7 +34,7 @@ typedef struct {
 	ULONG ver_major;
 	ULONG ver_minor;
 	ULONG ver_patch;
-} V3S;
+} VERS3;
 
 /*****************************************************************************
  * 
@@ -45,7 +45,7 @@ typedef struct {
 static VOID GetHelp(VOID);
 static APTR GetProperty(STRPTR);
 static ULONG GetVersion(LONG *);
-static V3S * ParseIdString(STRPTR);
+static VERS3 * ParseIdString(STRPTR);
 
 /*****************************************************************************
  * 
@@ -57,8 +57,8 @@ APTR DeviceTreeBase = NULL;
 extern struct ExecBase * SysBase;
 extern struct DosLibrary * DOSBase;
 
-static V3S V3Old;
-static V3S * V3 = NULL;
+static VERS3 versionOld;
+static VERS3 * version = NULL;
 static STRPTR VSTRING = VERSTRING;
 
 /*****************************************************************************
@@ -103,17 +103,17 @@ static APTR GetProperty(STRPTR name)
  * 
  *****************************************************************************/
 
-static V3S * ParseIdString(STRPTR s)
+static VERS3 * ParseIdString(STRPTR s)
 {
 	s += 6;
 	
 	while (*s && *s != ' ') ++s;
 	
-	s += StrToLong(++s, (LONG *)&V3Old.ver_major);
-	s += StrToLong(++s, (LONG *)&V3Old.ver_minor);
-	s += StrToLong(++s, (LONG *)&V3Old.ver_patch);
+	s += StrToLong(++s, (LONG *)&versionOld.ver_major);
+	s += StrToLong(++s, (LONG *)&versionOld.ver_minor);
+	s += StrToLong(++s, (LONG *)&versionOld.ver_patch);
 	
-	return (&V3Old);
+	return (&versionOld);
 }
 
 /*****************************************************************************
@@ -128,11 +128,11 @@ static ULONG GetVersion(LONG * opts)
 	
 	// GET version using the new method (Emu68 >= 1.1)
 	if (value = GetProperty("version")) {
-		V3 = (V3S *)value;
+		version = (VERS3 *)value;
 	} else {
 		// GET version using the old method (Emu68 < 1.1)
 		if (value = GetProperty("idstring")) {
-			V3 = ParseIdString((STRPTR)value);
+			version = ParseIdString((STRPTR)value);
 		} else {
 			Printf("Cant open property (idstring)!\n");
 			return (RETURN_ERROR);
@@ -143,17 +143,17 @@ static ULONG GetVersion(LONG * opts)
 	if (!opts[OPT_SHORT] && !opts[OPT_FULL] && 
 		!opts[OPT_GITHASH] && !opts[OPT_VARIANT]) {
 			Printf("Emu68 %ld.%ld.%ld\n", 
-				V3->ver_major, 
-				V3->ver_minor, 
-				V3->ver_patch);
+				version->ver_major, 
+				version->ver_minor, 
+				version->ver_patch);
 	}
 	
 	// PRINT SHORT
 	if (opts[OPT_SHORT]) {
 		Printf("%ld.%ld.%ld\n", 
-			V3->ver_major,
-			V3->ver_minor, 
-			V3->ver_patch);
+			version->ver_major,
+			version->ver_minor, 
+			version->ver_patch);
 	}
 	
 	// PRINT FULL
@@ -188,21 +188,21 @@ static ULONG GetVersion(LONG * opts)
 	
 	// PRINT VERSION
 	if (opts[OPT_VERSION]) {
-		if ((*(LONG *)opts[OPT_VERSION]) > V3->ver_major) {
+		if ((*(LONG *)opts[OPT_VERSION]) > version->ver_major) {
 			return (RETURN_WARN);
 		}
 	}
 	
 	// PRINT REVISION
 	if (opts[OPT_REVISION]) {
-		if ((*(LONG *)opts[OPT_REVISION]) > V3->ver_minor) {
+		if ((*(LONG *)opts[OPT_REVISION]) > version->ver_minor) {
 			return (RETURN_WARN);
 		}
 	}
 	
 	// PRINT HOTFIX
 	if (opts[OPT_HOTFIX]) {
-		if ((*(LONG *)opts[OPT_HOTFIX]) > V3->ver_patch) {
+		if ((*(LONG *)opts[OPT_HOTFIX]) > version->ver_patch) {
 			return (RETURN_WARN);
 		}
 	}
