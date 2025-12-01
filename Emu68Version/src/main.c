@@ -62,7 +62,7 @@ static CONST_STRPTR VSTRING = VERSTRING;
 
 /*****************************************************************************
  * 
- * GetHelp(VOID)
+ * GetHelp()
  * 
  *****************************************************************************/
 
@@ -81,7 +81,7 @@ static VOID GetHelp(VOID)
 
 /*****************************************************************************
  * 
- * GetProperty(APTR key, STRPTR name)
+ * GetProperty()
  * 
  *****************************************************************************/
 
@@ -98,7 +98,7 @@ static APTR GetProperty(APTR key, STRPTR name)
 
 /*****************************************************************************
  * 
- * ParseIdString(STRPTR s)
+ * ParseIdString()
  * By design, there is no bound-checking, because
  * the Emu68 IdString is always well-formed.
  * 
@@ -106,13 +106,13 @@ static APTR GetProperty(APTR key, STRPTR name)
 
 static VERS3 * ParseIdString(STRPTR s)
 {
-	// SKIP "$VER:"
+	// SKIP "$VER: "
 	s += 6;
 	
-	// SKIP NAME
+	// SKIP "NAME "
 	while (*s && *s != ' ') ++s;
 	
-	// GET VERSION NUMBERS
+	// EXTRACT Major.Minor.Patch
 	s += StrToLong(++s, (LONG *)&versionOld.ver_major);
 	s += StrToLong(++s, (LONG *)&versionOld.ver_minor);
 	s += StrToLong(++s, (LONG *)&versionOld.ver_patch);
@@ -122,7 +122,7 @@ static VERS3 * ParseIdString(STRPTR s)
 
 /*****************************************************************************
  * 
- * GetVersion(APTR key, LONG * opts)
+ * GetVersion()
  * 
  *****************************************************************************/
 
@@ -217,7 +217,7 @@ static ULONG GetVersion(APTR key, LONG * opts)
 
 /*****************************************************************************
  * 
- * main(ULONG argc, STRPTR * argv)
+ * main()
  * By design, there is no need to release any opened DeviceTree resources.
  * 
  *****************************************************************************/
