@@ -43,8 +43,8 @@ typedef struct {
  *****************************************************************************/
 
 static VOID GetHelp(VOID);
-static APTR GetProperty(STRPTR);
-static ULONG GetVersion(LONG *);
+static APTR GetProperty(APTR key, STRPTR);
+static ULONG GetVersion(APTR key, LONG *);
 static VERS3 * ParseIdString(STRPTR);
 
 /*****************************************************************************
@@ -59,7 +59,7 @@ extern struct DosLibrary * DOSBase;
 
 static VERS3 versionOld;
 static VERS3 * version = NULL;
-static STRPTR VSTRING = VERSTRING;
+static CONST_STRPTR VSTRING = VERSTRING;
 
 /*****************************************************************************
  * 
@@ -86,11 +86,11 @@ static VOID GetHelp(VOID)
  * 
  *****************************************************************************/
 
-static APTR GetProperty(STRPTR name)
+static APTR GetProperty(APTR key, STRPTR name)
 {
 	APTR property;
 	
-	if (property = DT_FindProperty(DT_OpenKey("/emu68"), name)) {
+	if (property = DT_FindProperty(key, name)) {
 		return (APTR)DT_GetPropValue(property);
 	}
 	
@@ -122,16 +122,16 @@ static VERS3 * ParseIdString(STRPTR s)
  * 
  *****************************************************************************/
 
-static ULONG GetVersion(LONG * opts)
+static ULONG GetVersion(APTR key, LONG * opts)
 {
 	APTR value = NULL;
 	
 	// GET VERSION using the new method (Emu68 >= 1.1)
-	if (value = GetProperty("version")) {
+	if (value = GetProperty(key, "version")) {
 		version = (VERS3 *)value;
 	} else {
 		// GET VERSION using the old method (Emu68 < 1.1)
-		if (value = GetProperty("idstring")) {
+		if (value = GetProperty(key, "idstring")) {
 			version = ParseIdString((STRPTR)value);
 		} else {
 			Printf("Can't open property (idstring)!\n");
@@ -158,7 +158,7 @@ static ULONG GetVersion(LONG * opts)
 	
 	// PRINT FULL
 	if (opts[OPT_FULL]) {
-		if (value = GetProperty("idstring")) {
+		if (value = GetProperty(key, "idstring")) {
 			Printf("%s\n", (STRPTR)((ULONG)value + 6));
 		} else {
 			Printf("Can't open property (idstring)!\n");
@@ -168,7 +168,7 @@ static ULONG GetVersion(LONG * opts)
 	
 	// PRINT GITHASH
 	if (opts[OPT_GITHASH]) {
-		if (value = GetProperty("git-hash")) {
+		if (value = GetProperty(key, "git-hash")) {
 			Printf("%s\n", value);
 		} else {
 			Printf("Can't open property (git-hash)!\n");
@@ -178,7 +178,7 @@ static ULONG GetVersion(LONG * opts)
 	
 	// PRINT VARIANT
 	if (opts[OPT_VARIANT]) {
-		if (value = GetProperty("variant")) {
+		if (value = GetProperty(key, "variant")) {
 			Printf("%s\n", value);
 		} else {
 			Printf("Can't open property (variant)!\n");
@@ -219,6 +219,7 @@ static ULONG GetVersion(LONG * opts)
 
 ULONG main(ULONG argc, STRPTR * argv)
 {
+	APTR key;
 	ULONG rc;
 	LONG * opts = NULL;
 	struct RDArgs * rdargs = NULL;
@@ -247,13 +248,13 @@ ULONG main(ULONG argc, STRPTR * argv)
 		goto cleanExit;
 	}
 	
-	if (!(DT_OpenKey("/emu68"))) {
+	if (!(key = DT_OpenKey("/emu68"))) {
 		PutStr("Can't open emu68 key!\n");
 		rc = RETURN_ERROR;
 		goto cleanExit;
 	}
 	
-	rc = GetVersion(opts);
+	rc = GetVersion(key, opts);
 	
 cleanExit:
 	if (rdargs) FreeArgs(rdargs);
