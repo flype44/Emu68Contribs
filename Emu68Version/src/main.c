@@ -219,8 +219,8 @@ static ULONG GetVersion(APTR key, LONG * opts)
 
 ULONG main(ULONG argc, STRPTR * argv)
 {
-	APTR key;
 	ULONG rc;
+	APTR key = NULL;
 	LONG * opts = NULL;
 	struct RDArgs * rdargs = NULL;
 	

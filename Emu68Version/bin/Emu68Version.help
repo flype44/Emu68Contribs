@@ -5,7 +5,7 @@
    FORMAT
 
 	EMU68VERSION [<VERSION #>] [<REVISION #>] [<HOTFIX #>]
-	        [SHORT] [FULL] [GITHASH] [VARIANT]
+		[SHORT] [FULL] [GITHASH] [VARIANT]
 
    TEMPLATE
 
@@ -60,44 +60,58 @@
 
    EXAMPLES
 
-	1> EMU68VERSION
+	1> C:EMU68VERSION
 	Emu68 1.0.6
 
-	1> EMU68VERSION SHORT
+	1> C:EMU68VERSION SHORT
 	1.0.6
 
-	1> EMU68VERSION FULL
+	1> C:EMU68VERSION FULL
 	Emu68 1.0.6 (27.10.2025) git:562a2aa
 
-	1> EMU68VERSION GITHASH
+	1> C:EMU68VERSION GITHASH
 	562a2aaf75fdae1e77eb80940677853d53af034f
 
-	1> EMU68VERSION VARIANT
+	1> C:EMU68VERSION VARIANT
 	pistorm32lite
 
-	1> EMU68VERSION FULL GITHASH VARIANT
+	1> C:EMU68VERSION FULL GITHASH VARIANT
 	Emu68 1.0.6 (27.10.2025) git:562a2aa
 	562a2aaf75fdae1e77eb80940677853d53af034f
 	pistorm32lite
 
-	1> EMU68VERSION 1
+	1> C:EMU68VERSION 1
 	$RC=5 if the Emu68 version is lower than to 1
 	$RC=0 if the Emu68 version is greater than or equal to 1
 
-	1> EMU68VERSION 1 0
+	1> C:EMU68VERSION 1 0
 	$RC=5 if the Emu68 version is lower than to 1.0
 	$RC=0 if the Emu68 version is greater than or equal to 1.0
 
-	1> EMU68VERSION 1 0 6
+	1> C:EMU68VERSION 1 0 6
 	$RC=5 if the Emu68 version is lower than to 1.0.6
 	$RC=0 if the Emu68 version is greater than or equal to 1.0.6
 
+	1> C:EMU68VERSION HELP
+	Emu68Version 1.0 (30.11.2025) [SAS/C 6.59] Philippe CARPENTIER
+	
+	HELP/S     : Print this help
+	VERSION/N  : Check the Emu68 version (major)
+	REVISION/N : Check the Emu68 revision (minor)
+	HOTFIX/N   : Check the Emu68 hotfix (patch)
+	SHORT/S    : Print the Emu68 version string (short)
+	FULL/S     : Print the Emu68 version string (full)
+	GITHASH/S  : Print the Emu68 git-hash string
+	VARIANT/S  : Print the Emu68 variant string
+
    EXAMPLE SCRIPT
 
-	EMU68VERSION 1 0 6 >NIL:
+	FAILAT 10
+	
+	C:EMU68VERSION 1 0 6 >NIL:
 	
 	IF NOT WARN
-	  ECHO "GREATER OR EQUAL THAN 1.0.6"
+	  ECHO "GREATER THAN OR EQUAL TO 1.0.6"
 	ELSE
 	  ECHO "LOWER THAN 1.0.6"
 	ENDIF
