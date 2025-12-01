@@ -1,8 +1,9 @@
 /******************************************************************************
  * 
- * Project: Emu68Version
- * Version: 1.0 (30.11.2025)
- * Author:  Philippe CARPENTIER
+ * Project:  Emu68Version
+ * Version:  1.0 (30.11.2025)
+ * Author:   Philippe CARPENTIER
+ * Compiler: SAS/C 6.59 for AmigaOS m68k
  * 
  *****************************************************************************/
 
@@ -19,10 +20,8 @@
  * 
  *****************************************************************************/
 
-#define TEMPLATE "\
-VERSION/N,REVISION/N,HOTFIX/N,\
-SHORT/S,FULL/S,GITHASH/S,\
-VARIANT/S,HELP/S"
+#define TEMPLATE "VERSION/N,REVISION/N,HOTFIX/N,\
+SHORT/S,FULL/S,GITHASH/S,VARIANT/S,HELP/S"
 
 enum {
 	OPT_VERSION, OPT_REVISION, OPT_HOTFIX,
@@ -43,8 +42,8 @@ typedef struct {
  *****************************************************************************/
 
 static VOID GetHelp(VOID);
-static APTR GetProperty(APTR key, STRPTR);
-static ULONG GetVersion(APTR key, LONG *);
+static APTR GetProperty(APTR, STRPTR);
+static ULONG GetVersion(APTR, LONG *);
 static VERS3 * ParseIdString(STRPTR);
 
 /*****************************************************************************
@@ -63,7 +62,7 @@ static CONST_STRPTR VSTRING = VERSTRING;
 
 /*****************************************************************************
  * 
- * GetHelp()
+ * GetHelp(VOID)
  * 
  *****************************************************************************/
 
@@ -82,7 +81,7 @@ static VOID GetHelp(VOID)
 
 /*****************************************************************************
  * 
- * GetProperty()
+ * GetProperty(APTR key, STRPTR name)
  * 
  *****************************************************************************/
 
@@ -99,16 +98,21 @@ static APTR GetProperty(APTR key, STRPTR name)
 
 /*****************************************************************************
  * 
- * ParseIdString()
+ * ParseIdString(STRPTR s)
+ * By design, there is no bound-checking, because
+ * the Emu68 IdString is always well-formed.
  * 
  *****************************************************************************/
 
 static VERS3 * ParseIdString(STRPTR s)
 {
+	// SKIP "$VER:"
 	s += 6;
 	
+	// SKIP NAME
 	while (*s && *s != ' ') ++s;
 	
+	// GET VERSION NUMBERS
 	s += StrToLong(++s, (LONG *)&versionOld.ver_major);
 	s += StrToLong(++s, (LONG *)&versionOld.ver_minor);
 	s += StrToLong(++s, (LONG *)&versionOld.ver_patch);
@@ -118,7 +122,7 @@ static VERS3 * ParseIdString(STRPTR s)
 
 /*****************************************************************************
  * 
- * GetVersion()
+ * GetVersion(APTR key, LONG * opts)
  * 
  *****************************************************************************/
 
@@ -126,11 +130,11 @@ static ULONG GetVersion(APTR key, LONG * opts)
 {
 	APTR value = NULL;
 	
-	// GET VERSION using the new method (Emu68 >= 1.1)
+	// GET VERSION using the NEW method (Emu68 >= 1.1)
 	if (value = GetProperty(key, "version")) {
 		version = (VERS3 *)value;
 	} else {
-		// GET VERSION using the old method (Emu68 < 1.1)
+		// GET VERSION using the OLD method (Emu68 < 1.1)
 		if (value = GetProperty(key, "idstring")) {
 			version = ParseIdString((STRPTR)value);
 		} else {
@@ -148,7 +152,7 @@ static ULONG GetVersion(APTR key, LONG * opts)
 				version->ver_patch);
 	}
 	
-	// PRINT SHORT
+	// PRINT VERSION SHORT
 	if (opts[OPT_SHORT]) {
 		Printf("%ld.%ld.%ld\n", 
 			version->ver_major,
@@ -156,7 +160,7 @@ static ULONG GetVersion(APTR key, LONG * opts)
 			version->ver_patch);
 	}
 	
-	// PRINT FULL
+	// PRINT VERSION FULL
 	if (opts[OPT_FULL]) {
 		if (value = GetProperty(key, "idstring")) {
 			Printf("%s\n", (STRPTR)((ULONG)value + 6));
@@ -213,7 +217,8 @@ static ULONG GetVersion(APTR key, LONG * opts)
 
 /*****************************************************************************
  * 
- * Entry point
+ * main(ULONG argc, STRPTR * argv)
+ * By design, there is no need to release any opened DeviceTree resources.
  * 
  *****************************************************************************/
 
@@ -224,36 +229,42 @@ ULONG main(ULONG argc, STRPTR * argv)
 	LONG * opts = NULL;
 	struct RDArgs * rdargs = NULL;
 	
+	// ALLOCATE MEMORY
 	if (!(opts = AllocVec(OPT_COUNT * sizeof(LONG), MEMF_PUBLIC|MEMF_CLEAR))) {
 		PutStr("Can't allocate memory.\n");
 		rc = RETURN_FAIL;
 		goto cleanExit;
 	}
 	
+	// READ ARGUMENTS
 	if (!(rdargs = (struct RDArgs *)ReadArgs(TEMPLATE, opts, NULL))) {
 		PutStr("Bad argument, use HELP for more information!\n");
 		rc = RETURN_FAIL;
 		goto cleanExit;
 	}
 	
+	// HELP ARGUMENT
 	if (opts[OPT_HELP]) {
 		GetHelp();
 		rc = RETURN_OK;
 		goto cleanExit;
 	}
 	
+	// OPEN DEVICETREE
 	if (!(DeviceTreeBase = OpenResource(DEVICETREE_NAME))) {
 		PutStr("Can't open " DEVICETREE_NAME "!\n");
 		rc = RETURN_ERROR;
 		goto cleanExit;
 	}
 	
+	// OPEN DEVICETREE EMU68 KEY
 	if (!(key = DT_OpenKey("/emu68"))) {
 		PutStr("Can't open emu68 key!\n");
 		rc = RETURN_ERROR;
 		goto cleanExit;
 	}
 	
+	// ENTRY POINT
 	rc = GetVersion(key, opts);
 	
 cleanExit:
