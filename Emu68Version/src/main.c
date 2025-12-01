@@ -134,7 +134,7 @@ static ULONG GetVersion(LONG * opts)
 		if (value = GetProperty("idstring")) {
 			version = ParseIdString((STRPTR)value);
 		} else {
-			Printf("Cant open property (idstring)!\n");
+			Printf("Can't open property (idstring)!\n");
 			return (RETURN_ERROR);
 		}
 	}
@@ -161,7 +161,7 @@ static ULONG GetVersion(LONG * opts)
 		if (value = GetProperty("idstring")) {
 			Printf("%s\n", (STRPTR)((ULONG)value + 6));
 		} else {
-			Printf("Cant open property (idstring)!\n");
+			Printf("Can't open property (idstring)!\n");
 			return (RETURN_ERROR);
 		}
 	}
@@ -171,7 +171,7 @@ static ULONG GetVersion(LONG * opts)
 		if (value = GetProperty("git-hash")) {
 			Printf("%s\n", value);
 		} else {
-			Printf("Cant open property (git-hash)!\n");
+			Printf("Can't open property (git-hash)!\n");
 			return (RETURN_ERROR);
 		}
 	}
@@ -181,26 +181,26 @@ static ULONG GetVersion(LONG * opts)
 		if (value = GetProperty("variant")) {
 			Printf("%s\n", value);
 		} else {
-			Printf("Cant open property (variant)!\n");
+			Printf("Can't open property (variant)!\n");
 			return (RETURN_ERROR);
 		}
 	}
 	
-	// PRINT VERSION
+	// CHECK VERSION
 	if (opts[OPT_VERSION]) {
 		if ((*(LONG *)opts[OPT_VERSION]) > version->ver_major) {
 			return (RETURN_WARN);
 		}
 	}
 	
-	// PRINT REVISION
+	// CHECK REVISION
 	if (opts[OPT_REVISION]) {
 		if ((*(LONG *)opts[OPT_REVISION]) > version->ver_minor) {
 			return (RETURN_WARN);
 		}
 	}
 	
-	// PRINT HOTFIX
+	// CHECK HOTFIX
 	if (opts[OPT_HOTFIX]) {
 		if ((*(LONG *)opts[OPT_HOTFIX]) > version->ver_patch) {
 			return (RETURN_WARN);
@@ -224,7 +224,7 @@ ULONG main(ULONG argc, STRPTR * argv)
 	struct RDArgs * rdargs = NULL;
 	
 	if (!(opts = AllocVec(OPT_COUNT * sizeof(LONG), MEMF_PUBLIC|MEMF_CLEAR))) {
-		PutStr("Cant allocate memory.\n");
+		PutStr("Can't allocate memory.\n");
 		rc = RETURN_FAIL;
 		goto cleanExit;
 	}
@@ -242,13 +242,13 @@ ULONG main(ULONG argc, STRPTR * argv)
 	}
 	
 	if (!(DeviceTreeBase = OpenResource(DEVICETREE_NAME))) {
-		PutStr("Cant open " DEVICETREE_NAME "!\n");
+		PutStr("Can't open " DEVICETREE_NAME "!\n");
 		rc = RETURN_ERROR;
 		goto cleanExit;
 	}
 	
 	if (!(DT_OpenKey("/emu68"))) {
-		PutStr("Cant open emu68 key!\n");
+		PutStr("Can't open emu68 key!\n");
 		rc = RETURN_ERROR;
 		goto cleanExit;
 	}
