@@ -126,11 +126,11 @@ static ULONG GetVersion(LONG * opts)
 {
 	APTR value = NULL;
 	
-	// GET version using the new method (Emu68 >= 1.1)
+	// GET VERSION using the new method (Emu68 >= 1.1)
 	if (value = GetProperty("version")) {
 		version = (VERS3 *)value;
 	} else {
-		// GET version using the old method (Emu68 < 1.1)
+		// GET VERSION using the old method (Emu68 < 1.1)
 		if (value = GetProperty("idstring")) {
 			version = ParseIdString((STRPTR)value);
 		} else {
@@ -242,13 +242,13 @@ ULONG main(ULONG argc, STRPTR * argv)
 	}
 	
 	if (!(DeviceTreeBase = OpenResource(DEVICETREE_NAME))) {
-		Printf("Cant open " DEVICETREE_NAME "!\n");
+		PutStr("Cant open " DEVICETREE_NAME "!\n");
 		rc = RETURN_ERROR;
 		goto cleanExit;
 	}
 	
 	if (!(DT_OpenKey("/emu68"))) {
-		Printf("Cant open emu68 key!\n");
+		PutStr("Cant open emu68 key!\n");
 		rc = RETURN_ERROR;
 		goto cleanExit;
 	}
