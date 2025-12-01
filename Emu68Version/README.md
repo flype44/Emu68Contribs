@@ -25,19 +25,22 @@
 	C:EMU68VERSION
 ```
 
-## **IMPORTANT**
+## **PREAMBULE**
 
 ```
-	This command requires the Emu68 JIT baremetal emulator.
+	EMU68VERSION is an AmigaOS CLI command for Emu68. It works more or less 
+	the same way than the AmigaOS CLI C:Version command, but is dedicated to 
+	GET and/or to CHECK the Emu68 version numbers (major.minor.patch).
+	It requires mandatory the Emu68 JIT baremetal emulator to work properly.
 ```
 
 ## **FUNCTION**
 
 ```
 	EMU68VERSION prints the version string of the currently running Emu68.
-	It can also test for a specific version/revision/hotfix and warn if
+	It can also test for a specific version/revision/hotfix and WARN if
 	the version/revision/hotfix is lower than the specified value.
-	This is useful in scripts.
+	This is useful in AmigaOS DOS scripts.
 	
 	The SHORT option prints a shorter version string.
 	
@@ -70,7 +73,7 @@
 	ERROR   (10) Can't open property (idstring)
 	ERROR   (10) Can't open property (git-hash)
 	ERROR   (10) Can't open property (variant)
-	WARNING (5)  The Emu68 version is lower than the specified value
+	WARN    (5)  The Emu68 version is lower than the specified value
 	SUCCESS (0)  The Emu68 version is greater or equal than the specified value
 ```
 
@@ -148,7 +151,7 @@
 	C:EMU68VERSION 1 0 6 >NIL:
 	
 	IF NOT WARN
-	  ECHO "GREATER OR EQUAL THAN 1.0.6"
+	  ECHO "GREATER THAN OR EQUAL TO 1.0.6"
 	ELSE
 	  ECHO "LOWER THAN 1.0.6"
 	ENDIF
